@@ -44,3 +44,7 @@ options:
 	-h [height]
 	-o [output_file]
 ```
+
+## Example Usage
+
+![](./example/ex1.gif)
