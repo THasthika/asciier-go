@@ -13,8 +13,6 @@ import (
 
 func main() {
 
-	fmt.Println("OK!")
-
 	width := flag.Int("w", 0, "output width")
 	height := flag.Int("h", 0, "output height")
 	outFile := flag.String("o", "", "output file path")
