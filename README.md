@@ -35,3 +35,12 @@ switch {
 - [ ] Convert ASCII txt file to grayscale image
 
 ## Usage
+
+```bash
+asciier [options] [image_file]
+
+options:
+	-w [width]
+	-h [height]
+	-o [output_file]
+```
