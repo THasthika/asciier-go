@@ -5,11 +5,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gosuri/uiprogress"
 	"github.com/nfnt/resize"
 
 	"image/color"
+	_ "image/gif"
 	_ "image/jpeg"
+	_ "image/png"
 )
 
 type AsccierImageSize struct {
@@ -100,10 +101,6 @@ func (asciierImage *AsciierImage) ConvertToAscii() string {
 		workerCount = pixelCount
 	}
 
-	uiprogress.Start()
-	jobAddBar := uiprogress.AddBar(pixelCount).AppendCompleted().PrependElapsed()
-	resultGetBar := uiprogress.AddBar(pixelCount).AppendCompleted().PrependElapsed()
-
 	reconstAwait := make(chan asciiImageReconstructor, 1)
 	go func() {
 		r := asciiImageReconstructor{}
@@ -122,7 +119,6 @@ func (asciierImage *AsciierImage) ConvertToAscii() string {
 
 	for x := 0; x < maxX; x++ {
 		for y := 0; y < maxY; y++ {
-			jobAddBar.Incr()
 			jobs <- &colorWithPosition{
 				c: resizedImage.At(x, y),
 				p: image.Point{X: x, Y: y},
@@ -133,7 +129,6 @@ func (asciierImage *AsciierImage) ConvertToAscii() string {
 	reconst := <-reconstAwait
 
 	for i := 0; i < pixelCount; i++ {
-		resultGetBar.Incr()
 		ret := <-results
 		line := reconst.d[ret.p.Y]
 		line[ret.p.X] = ret.b
@@ -141,11 +136,8 @@ func (asciierImage *AsciierImage) ConvertToAscii() string {
 
 	close(jobs)
 
-	makeStringBar := uiprogress.AddBar(len(reconst.d)).AppendCompleted().PrependElapsed()
-
 	ret := make([]string, reconst.height)
 	for i := range reconst.d {
-		makeStringBar.Incr()
 		ret[i] = string(reconst.d[i])
 	}
 
